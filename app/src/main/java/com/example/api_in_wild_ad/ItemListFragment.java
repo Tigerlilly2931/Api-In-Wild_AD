@@ -5,15 +5,15 @@ import android.content.ClipDescription;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.KeyEvent;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,13 +34,16 @@ import java.util.List;
  */
 public class ItemListFragment extends Fragment {
 
+    ProgressBar pgB;
+    View whiteBar;
+
     /**
      * Method to intercept global key events in the
      * item list fragment to trigger keyboard shortcuts
      * Currently provides a toast when Ctrl + Z and Ctrl + F
      * are triggered
      */
-    ViewCompat.OnUnhandledKeyEventListenerCompat unhandledKeyEventListenerCompat = (v, event) -> {
+    /**ViewCompat.OnUnhandledKeyEventListenerCompat unhandledKeyEventListenerCompat = (v, event) -> {
         if (event.getKeyCode() == KeyEvent.KEYCODE_Z && event.isCtrlPressed()) {
             Toast.makeText(
                     v.getContext(),
@@ -57,9 +60,11 @@ public class ItemListFragment extends Fragment {
             return true;
         }
         return false;
-    };
+    };*/
 
     private FragmentItemListBinding binding;
+
+    private static HearthstoneAPIVolleyContent hearthstoneAPIVolleyContent = new HearthstoneAPIVolleyContent();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,8 +77,23 @@ public class ItemListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        ViewCompat.addOnUnhandledKeyEventListener(view, unhandledKeyEventListenerCompat);
+        pgB = view.findViewById(R.id.progressBar);
+        whiteBar = view.findViewById(R.id.whiteBarThing);
+        if(!hearthstoneAPIVolleyContent.doneLoading){
+            hearthstoneAPIVolleyContent.doneLoading = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    pgB.setVisibility(View.GONE);
+                    whiteBar.setVisibility(View.GONE);
+                }
+            }, 10000);
+        }
+        else{
+            pgB.setVisibility(View.GONE);
+            whiteBar.setVisibility(View.GONE);
+        }
+        //ViewCompat.addOnUnhandledKeyEventListener(view, unhandledKeyEventListenerCompat);
 
         RecyclerView recyclerView = binding.itemList;
 
@@ -89,8 +109,9 @@ public class ItemListFragment extends Fragment {
             View itemDetailFragmentContainer
     ) {
 
+        hearthstoneAPIVolleyContent.HearthStoneAPITesting(getActivity());
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(
-                PlaceholderContent.ITEMS,
+                hearthstoneAPIVolleyContent.HEARTHSTONE_API_STUFFS,
                 itemDetailFragmentContainer
         ));
     }
@@ -104,10 +125,10 @@ public class ItemListFragment extends Fragment {
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<PlaceholderContent.PlaceholderItem> mValues;
+        private final List<HearthstoneAPIModel> mValues;
         private final View mItemDetailFragmentContainer;
 
-        SimpleItemRecyclerViewAdapter(List<PlaceholderContent.PlaceholderItem> items,
+        SimpleItemRecyclerViewAdapter(List<HearthstoneAPIModel> items,
                                       View itemDetailFragmentContainer) {
             mValues = items;
             mItemDetailFragmentContainer = itemDetailFragmentContainer;
@@ -124,8 +145,10 @@ public class ItemListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            //Title of the thing in list
+            holder.mIdView.setText(mValues.get(position).getClassName());
+            //Extra details about it
+            //holder.mContentView.setText(mValues.get(position).content);
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(itemView -> {
@@ -139,50 +162,6 @@ public class ItemListFragment extends Fragment {
                 } else {
                     Navigation.findNavController(itemView).navigate(R.id.show_item_detail, arguments);
                 }
-            });
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                /*
-                 * Context click listener to handle Right click events
-                 * from mice and trackpad input to provide a more native
-                 * experience on larger screen devices
-                 */
-                holder.itemView.setOnContextClickListener(v -> {
-                    PlaceholderContent.PlaceholderItem item =
-                            (PlaceholderContent.PlaceholderItem) holder.itemView.getTag();
-                    Toast.makeText(
-                            holder.itemView.getContext(),
-                            "Context click of item " + item.id,
-                            Toast.LENGTH_LONG
-                    ).show();
-                    return true;
-                });
-            }
-            holder.itemView.setOnLongClickListener(v -> {
-                // Setting the item id as the clip data so that the drop target is able to
-                // identify the id of the content
-                ClipData.Item clipItem = new ClipData.Item(mValues.get(position).id);
-                ClipData dragData = new ClipData(
-                        ((PlaceholderContent.PlaceholderItem) v.getTag()).content,
-                        new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
-                        clipItem
-                );
-
-                if (Build.VERSION.SDK_INT >= 24) {
-                    v.startDragAndDrop(
-                            dragData,
-                            new View.DragShadowBuilder(v),
-                            null,
-                            0
-                    );
-                } else {
-                    v.startDrag(
-                            dragData,
-                            new View.DragShadowBuilder(v),
-                            null,
-                            0
-                    );
-                }
-                return true;
             });
         }
 

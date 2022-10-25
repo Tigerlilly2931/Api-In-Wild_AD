@@ -3,7 +3,9 @@ package com.example.api_in_wild_ad;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -30,6 +32,7 @@ public class HearthstoneAPIVolleyContent {
 
     private boolean haveIt = false;
     private boolean isBuilt = false;
+    public boolean doneLoading = false;
 
 
     private void addVolleyToList(HearthstoneAPIModel hearthstoneAPIModel){
@@ -53,11 +56,20 @@ public class HearthstoneAPIVolleyContent {
         String url = res.getString(R.string.url);
         RequestQueue queue = Volley.newRequestQueue(activity);
 
+        /**JSONObject postparameters = new JSONObject();
+        try {
+            postparameters.put("X-RapidAPI-Key", "f3e79d612amsh960c556b32ebebbp192b99jsn470f0169f532");
+            postparameters.put("X-RapidAPI-Host", "omgvamp-hearthstone-v1.p.rapidapi.com");
+        } catch (JSONException error){
+
+        }*/
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try{
+                            JSONObject object = response.getJSONObject("patch");
+
                             JSONArray classesArray = response.getJSONArray("classes");
                             HEARTHSTONE_API_STUFFS.clear();
                             VOLLEY_MAP.clear();
@@ -80,8 +92,18 @@ public class HearthstoneAPIVolleyContent {
                     }
                 }, new Response.ErrorListener(){
             @Override
-            public void onErrorResponse(VolleyError error){error.printStackTrace();}
-        });
+            public void onErrorResponse(VolleyError error){
+                error.printStackTrace();
+            }
+        })
+        {@Override
+        public Map getHeaders() throws AuthFailureError{
+            HashMap headers = new HashMap();
+            headers.put("X-RapidAPI-Key", "f3e79d612amsh960c556b32ebebbp192b99jsn470f0169f532");
+            headers.put("X-RapidAPI-Host", "omgvamp-hearthstone-v1.p.rapidapi.com");
+            return headers;
+        }
+        };
         queue.add(request);
     }
 

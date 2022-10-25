@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.example.api_in_wild_ad.placeholder.PlaceholderContent;
 import com.example.api_in_wild_ad.databinding.FragmentItemDetailBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -23,6 +24,7 @@ import com.example.api_in_wild_ad.databinding.FragmentItemDetailBinding;
  */
 public class ItemDetailFragment extends Fragment {
 
+    private FloatingActionButton testingFab;
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -32,14 +34,14 @@ public class ItemDetailFragment extends Fragment {
     /**
      * The placeholder content this fragment is presenting.
      */
-    private PlaceholderContent.PlaceholderItem mItem;
+    private HearthstoneAPIModel mItem;
     private CollapsingToolbarLayout mToolbarLayout;
     private TextView mTextView;
 
     private final View.OnDragListener dragListener = (v, event) -> {
         if (event.getAction() == DragEvent.ACTION_DROP) {
             ClipData.Item clipDataItem = event.getClipData().getItemAt(0);
-            mItem = PlaceholderContent.ITEM_MAP.get(clipDataItem.getText().toString());
+            mItem = HearthstoneAPIVolleyContent.VOLLEY_MAP.get(clipDataItem.getText().toString());
             updateContent();
         }
         return true;
@@ -61,7 +63,7 @@ public class ItemDetailFragment extends Fragment {
             // Load the placeholder content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = PlaceholderContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = HearthstoneAPIVolleyContent.VOLLEY_MAP.get(getArguments().getString(ARG_ITEM_ID));
         }
     }
 
@@ -74,7 +76,7 @@ public class ItemDetailFragment extends Fragment {
 
         mToolbarLayout = rootView.findViewById(R.id.toolbar_layout);
         mTextView = binding.itemDetail;
-
+        testingFab = rootView.findViewById(R.id.fab);
         // Show the placeholder content as text in a TextView & in the toolbar if available.
         updateContent();
         rootView.setOnDragListener(dragListener);
@@ -89,10 +91,21 @@ public class ItemDetailFragment extends Fragment {
 
     private void updateContent() {
         if (mItem != null) {
-            mTextView.setText(mItem.details);
+            //Title of the volley things
+            mTextView.setText(String.valueOf(mItem.getClassName()));
             if (mToolbarLayout != null) {
-                mToolbarLayout.setTitle(mItem.content);
+                //Extra content details off to the side
+                //mToolbarLayout.setTitle(mItem.content);
             }
         }
+        if(testingFab != null){
+            testingFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+        }
+
     }
 }
