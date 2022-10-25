@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Api-In-Wild_AD</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="url">https://omgvamp-hearthstone-v1.p.rapidapi.com/info</string>
+</resources>
