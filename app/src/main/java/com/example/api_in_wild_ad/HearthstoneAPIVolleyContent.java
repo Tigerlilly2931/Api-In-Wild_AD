@@ -67,15 +67,21 @@ public class HearthstoneAPIVolleyContent {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        try{
-                            JSONObject object = response.getJSONObject("patch");
 
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, response.toString(), duration);
+                        //toast.show();
+                        //The response HAS things in it.. but it won't make those things into the what I need
+                        try{
+                            //JSONObject object = response.getJSONObject("patch");
+                            //toast = Toast.makeText(context, object.toString(), duration);
+                            //toast.show();
                             JSONArray classesArray = response.getJSONArray("classes");
                             HEARTHSTONE_API_STUFFS.clear();
                             VOLLEY_MAP.clear();
                             for(int i = 0; i<classesArray.length(); i++){
-                                JSONObject classNames = classesArray.getJSONObject(i);
-                                String classssNames = String.valueOf(classNames);
+                                String classNames = classesArray.getJSONObject(i).toString();
+                                String classssNames = classNames;
                                 Gson gson = new Gson();
                                 HearthstoneAPIModel HAM = gson.fromJson(classssNames, HearthstoneAPIModel.class);
                                 addVolleyToList(HAM);
@@ -83,7 +89,8 @@ public class HearthstoneAPIVolleyContent {
 
                         }
                         catch(JSONException e){
-
+                            toast = Toast.makeText(context, String.valueOf(e), duration);
+                            toast.show();
                         }
                         if(!isBuilt){
                             isBuilt = true;
@@ -93,12 +100,15 @@ public class HearthstoneAPIVolleyContent {
                 }, new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error){
-                error.printStackTrace();
+                //error.printStackTrace();
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, "That didn't work...", duration);
+                toast.show();
             }
         })
         {@Override
-        public Map getHeaders() throws AuthFailureError{
-            HashMap headers = new HashMap();
+        public Map<String,String> getHeaders() throws AuthFailureError{
+            HashMap<String,String> headers = new HashMap<String,String>();
             headers.put("X-RapidAPI-Key", "f3e79d612amsh960c556b32ebebbp192b99jsn470f0169f532");
             headers.put("X-RapidAPI-Host", "omgvamp-hearthstone-v1.p.rapidapi.com");
             return headers;

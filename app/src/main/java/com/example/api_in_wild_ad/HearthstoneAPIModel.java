@@ -23,10 +23,10 @@ public class HearthstoneAPIModel {
     //String Locales;
 
 
-    public HearthstoneAPIModel(final String ClassName){
+    /**public HearthstoneAPIModel(final String ClassName){
         setClassName(ClassName);
-    }
-    /**public HearthstoneAPIModel(final String ClassName, final String SetName, final String Types, final String Factions, final String Qualities, final String Races){
+    }*/
+    public HearthstoneAPIModel(final String ClassName, final String SetName, final String Types, final String Factions, final String Qualities, final String Races){
         setClassName(ClassName);
         setSetName(SetName);
         setTypes(Types);
@@ -34,7 +34,7 @@ public class HearthstoneAPIModel {
         setQualities(Qualities);
         setRaces(Races);
         //setLocales(Locales);
-    }*/
+    }
 
     public String getClassName(){return ClassName;}
     public String getSetName(){return SetName;}
