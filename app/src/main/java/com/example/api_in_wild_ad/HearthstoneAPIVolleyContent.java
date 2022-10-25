@@ -29,13 +29,18 @@ public class HearthstoneAPIVolleyContent {
 
     public static final Map<String, HearthstoneAPIModel> VOLLEY_MAP = new HashMap<String, HearthstoneAPIModel>();
     public static final List<HearthstoneAPIModel> HEARTHSTONE_API_STUFFS = new ArrayList<HearthstoneAPIModel>();
+    public static final List<HearthstoneAPILabelModal> HEARTHSTONE_LABELS = new ArrayList<HearthstoneAPILabelModal>();
+    public static final Map<String, HearthstoneAPILabelModal> LABEL_MODAL_MAP = new HashMap<String, HearthstoneAPILabelModal>();
 
     private boolean haveIt = false;
     private boolean isBuilt = false;
     public boolean doneLoading = false;
 
+    private List<String> classNamesList = new ArrayList<String>();
+
 
     private void addVolleyToList(HearthstoneAPIModel hearthstoneAPIModel){
+        haveIt = false;
         if(HEARTHSTONE_API_STUFFS.size() != 0){
             for(int i = 0; i < HEARTHSTONE_API_STUFFS.size(); i++){
                 if(HEARTHSTONE_API_STUFFS.get(i) == hearthstoneAPIModel){
@@ -49,6 +54,24 @@ public class HearthstoneAPIVolleyContent {
         if(!haveIt){
             HEARTHSTONE_API_STUFFS.add(hearthstoneAPIModel);
             VOLLEY_MAP.put(hearthstoneAPIModel.getClassName(), hearthstoneAPIModel);
+        }
+    }
+
+    private void addLabelToList(HearthstoneAPILabelModal hearthstoneAPILabelModal){
+        haveIt = false;
+        if(HEARTHSTONE_LABELS.size() != 0){
+            for(int i = 0; i<HEARTHSTONE_LABELS.size(); i++ ){
+                if(HEARTHSTONE_LABELS.get(i) == hearthstoneAPILabelModal){
+                    haveIt = true;
+                }
+                else if(HEARTHSTONE_LABELS.get(i) == null){
+                    haveIt = true;
+                }
+            }
+        }
+        if(!haveIt){
+            HEARTHSTONE_LABELS.add(hearthstoneAPILabelModal);
+            LABEL_MODAL_MAP.put(hearthstoneAPILabelModal.getLabels(), hearthstoneAPILabelModal);
         }
     }
 
@@ -76,16 +99,47 @@ public class HearthstoneAPIVolleyContent {
                             //JSONObject object = response.getJSONObject("patch");
                             //toast = Toast.makeText(context, object.toString(), duration);
                             //toast.show();
+                            /** classes has an array of strings! Not jsonobjects... */
                             JSONArray classesArray = response.getJSONArray("classes");
+                            JSONArray setsArray = response.getJSONArray("sets");
+                            JSONArray typesArray = response.getJSONArray("types");
+                            JSONArray factionsArray = response.getJSONArray("factions");
+                            JSONArray qualitiesArray = response.getJSONArray("qualities");
+                            JSONArray racesArray = response.getJSONArray("races");
+                            HEARTHSTONE_LABELS.clear();
                             HEARTHSTONE_API_STUFFS.clear();
                             VOLLEY_MAP.clear();
-                            for(int i = 0; i<classesArray.length(); i++){
-                                String classNames = classesArray.getJSONObject(i).toString();
-                                String classssNames = classNames;
-                                Gson gson = new Gson();
-                                HearthstoneAPIModel HAM = gson.fromJson(classssNames, HearthstoneAPIModel.class);
+                            List<String> Labelss = new ArrayList<String>();
+                            Labelss.add("Classes");
+                            Labelss.add("Sets");
+                            Labelss.add("Races");
+                            for(int i = 0; i<racesArray.length(); i++){
+                                /** The toast below works! */
+                                //14 strings
+                                String classNames = (String) classesArray.get(i);
+                                //50 strings
+                                String setNames = (String) setsArray.get(i);
+                                //7 strings
+                                //String typeNames = (String) typesArray.get(i);
+                                //3 strings
+                                //String factionNames = (String) factionsArray.get(i);
+                                //5 strings
+                                //String qualityNames = (String) qualitiesArray.get(i);
+                                //12 strings
+                                String raceNames = (String) racesArray.get(i);
+                                //toast = Toast.makeText(context, classNames, duration);
+                                //toast.show();
+                                //String classssNames = String.valueOf(classNames);
+                                //Gson gson = new Gson();
+                                HearthstoneAPIModel HAM = new HearthstoneAPIModel(classNames, setNames, raceNames);
                                 addVolleyToList(HAM);
                             }
+                            for(int i = 0; i < 3; i++){
+                                HearthstoneAPILabelModal HALM = new HearthstoneAPILabelModal(Labelss.get(i));
+                                addLabelToList(HALM);
+                            }
+
+
 
                         }
                         catch(JSONException e){

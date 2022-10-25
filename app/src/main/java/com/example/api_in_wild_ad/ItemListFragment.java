@@ -111,7 +111,7 @@ public class ItemListFragment extends Fragment {
 
         hearthstoneAPIVolleyContent.HearthStoneAPITesting(getActivity());
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(
-                hearthstoneAPIVolleyContent.HEARTHSTONE_API_STUFFS,
+                hearthstoneAPIVolleyContent.HEARTHSTONE_LABELS,
                 itemDetailFragmentContainer
         ));
     }
@@ -125,10 +125,10 @@ public class ItemListFragment extends Fragment {
     public static class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<HearthstoneAPIModel> mValues;
+        private final List<HearthstoneAPILabelModal> mValues;
         private final View mItemDetailFragmentContainer;
 
-        SimpleItemRecyclerViewAdapter(List<HearthstoneAPIModel> items,
+        SimpleItemRecyclerViewAdapter(List<HearthstoneAPILabelModal> items,
                                       View itemDetailFragmentContainer) {
             mValues = items;
             mItemDetailFragmentContainer = itemDetailFragmentContainer;
@@ -146,16 +146,14 @@ public class ItemListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             //Title of the thing in list
-            holder.mIdView.setText(mValues.get(position).getClassName());
+            holder.mIdView.setText(mValues.get(position).getLabels());
             //Extra details about it
             //holder.mContentView.setText(mValues.get(position).content);
 
             holder.itemView.setTag(mValues.get(position));
             holder.itemView.setOnClickListener(itemView -> {
-                PlaceholderContent.PlaceholderItem item =
-                        (PlaceholderContent.PlaceholderItem) itemView.getTag();
                 Bundle arguments = new Bundle();
-                arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.id);
+                arguments.putString(ItemDetailFragment.ARG_ITEM_ID,mValues.get(position).getLabels());
                 if (mItemDetailFragmentContainer != null) {
                     Navigation.findNavController(mItemDetailFragmentContainer)
                             .navigate(R.id.fragment_item_detail, arguments);
@@ -170,7 +168,7 @@ public class ItemListFragment extends Fragment {
             return mValues.size();
         }
 
-        class ViewHolder extends RecyclerView.ViewHolder {
+        static class ViewHolder extends RecyclerView.ViewHolder {
             final TextView mIdView;
             final TextView mContentView;
 
